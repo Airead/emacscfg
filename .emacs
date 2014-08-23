@@ -30,17 +30,16 @@ Return a list of installed packages or nil for every skipped package."
  '(2048-game ace-window ace-jump-mode ample-theme auto-complete bookmark+ coffee-mode
 	     color-theme es-windows icicles magit git-rebase-mode git-commit-mode
 	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet
-	     dired+))
+	     dired+ go-mode go-autocomplete quickrun))
 
 ;;; set font
-(add-to-list 'default-frame-alist '(font . "monaco-16"))
-
-(linum-mode 1)
+(add-to-list 'default-frame-alist '(font . "monaco-15"))
+(global-linum-mode 1)
 (show-paren-mode t)
 (ample-theme)
 (ac-config-default)
 (icy-mode 1)
-
+(iswitchb-mode 1)
 
 (append '("/Users/airead/Downloads/mxcl-homebrew-2f541f3/bin/"
 	  "/usr/local/bin/"
@@ -77,4 +76,30 @@ Return a list of installed packages or nil for every skipped package."
 (recentf-mode 1)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
-(iswitchb-mode 1)
+;;; highlight symbol 
+(require 'highlight-symbol)
+(global-set-key (kbd "C-'") 'highlight-symbol-at-point)
+(global-set-key (kbd "C-M-'") 'highlight-symbol-remove-all)
+(global-set-key (kbd "C-,") 'highlight-symbol-prev)
+(global-set-key (kbd "C-.") 'highlight-symbol-next)
+
+;;; nodejs-repl
+(setq nodejs-repl-command "/usr/local/bin/node")
+
+;;; use ibuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+;;; go code style
+(add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
+
+;;; quickrun
+(global-set-key (kbd "<f9>") 'quickrun)
+
+(quickrun-add-command "go"
+                      '((:command . "go")
+                        (:exec . ((lambda ()
+                                    (if (string-match-p "_test\\.go\\'" (buffer-name))
+                                        "%c test %o"
+                                      "%c run %o %s %a"))))
+                        (:compile-only . "%c build -o /dev/null %s %o %a")
+                        (:description . "Compile go file and execute with 'go'")))
