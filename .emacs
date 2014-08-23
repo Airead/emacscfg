@@ -29,11 +29,13 @@ Return a list of installed packages or nil for every skipped package."
 (ensure-package-installed
  '(2048-game ace-window ace-jump-mode ample-theme auto-complete bookmark+ coffee-mode
 	     color-theme es-windows icicles magit git-rebase-mode git-commit-mode
-	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet))
+	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet
+	     dired+))
 
 ;;; set font
 (add-to-list 'default-frame-alist '(font . "monaco-16"))
 
+(linum-mode 1)
 (show-paren-mode t)
 (ample-theme)
 (ac-config-default)
@@ -70,3 +72,7 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; magit
 (global-set-key "\C-ci" 'magit-status)
+
+;;; recentf stuff
+(recentf-mode 1)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
