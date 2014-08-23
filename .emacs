@@ -63,3 +63,10 @@ Return a list of installed packages or nil for every skipped package."
 (global-set-key [s-down] 'tabbar-forward-group)
 (global-set-key (kbd "C-:") 'tabbar-backward)
 (global-set-key (kbd "C-\"") 'tabbar-forward)
+
+;;; yasnipets mode
+(yas-global-mode 1)
+(global-set-key (kbd "C-;") 'yas-expand)
+
+;;; magit
+(global-set-key "\C-ci" 'magit-status)
