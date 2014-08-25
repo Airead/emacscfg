@@ -1,7 +1,8 @@
-(setq default-directory (file-name-directory load-file-name))
+(setq default-directory (concat (getenv "HOME") "/"))
+(setq config-base-dir (file-name-directory load-file-name))
 (setq package-user-dir
       (concat
-       default-directory
+       config-base-dir
        "elpa"))
 (setq package-archives
       '(;; ("gnu" . "http://elpa.gnu.org/packages/")
@@ -27,10 +28,11 @@ Return a list of installed packages or nil for every skipped package."
 (or (file-exists-p package-user-dir)
     (package-refresh-contents))
 (ensure-package-installed
- '(2048-game ace-window ace-jump-mode ample-theme auto-complete bookmark+ coffee-mode
+ '(ace-window ace-jump-mode ample-theme auto-complete bookmark+ coffee-mode
 	     color-theme es-windows icicles magit git-rebase-mode git-commit-mode
 	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet
-	     dired+ go-mode go-autocomplete quickrun))
+	     dired+ go-mode go-autocomplete quickrun sourcemap flycheck git-gutter+
+	     git-gutter-fringe+ highlight-indentation))
 
 ;;; set font
 (add-to-list 'default-frame-alist '(font . "monaco-15"))
@@ -41,10 +43,10 @@ Return a list of installed packages or nil for every skipped package."
 (icy-mode 1)
 (iswitchb-mode 1)
 
-(append '("/Users/airead/Downloads/mxcl-homebrew-2f541f3/bin/"
+(setq exec-path (append '("/Users/airead/Downloads/mxcl-homebrew-2f541f3/bin/"
 	  "/usr/local/bin/"
 	  )
-	exec-path)
+	exec-path))
 
 (setq new-M-r (lookup-key global-map (kbd "C-x r")))
 (global-set-key (kbd "M-r") new-M-r)
@@ -103,3 +105,36 @@ Return a list of installed packages or nil for every skipped package."
                                       "%c run %o %s %a"))))
                         (:compile-only . "%c build -o /dev/null %s %o %a")
                         (:description . "Compile go file and execute with 'go'")))
+
+
+;;; coffee
+(custom-set-variables '(coffee-tab-width 2)
+		      '(coffee-args-compile '("-c" "-m")))
+(add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
+(add-hook 'coffee-mode-hook
+	  (lambda ()
+	    (setq whitespace-action '(auto-cleanup))
+	    (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
+	    (whitespace-mode 1)
+	    (highlight-indentation-mode 1)
+	    (highlight-indentation-current-column-mode 1)
+	    ))
+
+;;; html
+(add-hook 'html-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'sgml-basic-offset) 4)))
+
+;;; projectile
+(projectile-global-mode 1)
+
+;;; move temp and autosave file to temporary dir
+(setq create-lockfiles nil)
+(setq make-backup-files nil)
+
+;;; git gutter
+(require 'git-gutter-fringe+)
+(global-git-gutter+-mode 1)
+;; Optional: Activate minimal skin
+;; (git-gutter-fr+-minimal)
+
