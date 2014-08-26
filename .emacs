@@ -1,25 +1,32 @@
+;;; .emacs --- airead Fan emacs config
+
+;;; Code:
+
+;;; Commentary:
+
+
 (setq default-directory (concat (getenv "HOME") "/"))
-(setq config-base-dir (file-name-directory load-file-name))
+(defvar config-base-dir (file-name-directory load-file-name))
 (setq package-user-dir
       (concat
        config-base-dir
        "elpa"))
-(setq package-archives
-      '(;; ("gnu" . "http://elpa.gnu.org/packages/")
-	;; ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
-	("melpa" . "http://melpa.milkbox.net/packages/")
-	))
+(custom-set-variables '(package-archives
+			'(;; ("gnu" . "http://elpa.gnu.org/packages/")
+			  ;; ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
+			  ("melpa" . "http://melpa.milkbox.net/packages/")
+			  )))
 
 (package-initialize)
 
 (defun ensure-package-installed (packages)
-  "Assure every package is installed, ask for installation if it’s not.
+  "Assure every PACKAGES is installed, ask for installation if it’s not.
 Return a list of installed packages or nil for every skipped package."
   (mapcar
    (lambda (package)
      (if (package-installed-p package)
          nil
-       (if (y-or-n-p (format "Package %s is missing. Install it? " package))
+       (if (y-or-n-p (concat (format "Package %s is missing.  Install it?" package)))
            (package-install package)
          package)))
    packages))
@@ -32,7 +39,15 @@ Return a list of installed packages or nil for every skipped package."
 	     color-theme es-windows icicles magit git-rebase-mode git-commit-mode
 	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet
 	     dired+ go-mode go-autocomplete quickrun sourcemap flycheck git-gutter+
-	     git-gutter-fringe+ highlight-indentation))
+	     git-gutter-fringe+ highlight-indentation js3-mode paredit
+	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm))
+
+(defun my-paredit-nonlisp ()
+  "Turn on paredit mode for non-lisps."
+  (interactive)
+  (set (make-local-variable 'paredit-space-for-delimiter-predicates)
+       '((lambda (endp delimiter) nil)))
+  (paredit-mode 1))
 
 ;;; set font
 (add-to-list 'default-frame-alist '(font . "monaco-15"))
@@ -48,10 +63,7 @@ Return a list of installed packages or nil for every skipped package."
 	  )
 	exec-path))
 
-(setq new-M-r (lookup-key global-map (kbd "C-x r")))
-(global-set-key (kbd "M-r") new-M-r)
-
-;;; easy keys to split window. Key based on ErgoEmacs keybinding
+;;; easy keys to split window.  Key based on ErgoEmacs keybinding
 (global-set-key (kbd "M-3") 'delete-other-windows) ; expand current pane
 (global-set-key (kbd "M-4") 'split-window-vertically) ; split pane top/bottom
 (global-set-key (kbd "M-1") 'split-window-horizontally) ; split pane left/right
@@ -78,15 +90,11 @@ Return a list of installed packages or nil for every skipped package."
 (recentf-mode 1)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
-;;; highlight symbol 
-(require 'highlight-symbol)
+;;; highlight symbol
 (global-set-key (kbd "C-'") 'highlight-symbol-at-point)
 (global-set-key (kbd "C-M-'") 'highlight-symbol-remove-all)
 (global-set-key (kbd "C-,") 'highlight-symbol-prev)
 (global-set-key (kbd "C-.") 'highlight-symbol-next)
-
-;;; nodejs-repl
-(setq nodejs-repl-command "/usr/local/bin/node")
 
 ;;; use ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -138,3 +146,47 @@ Return a list of installed packages or nil for every skipped package."
 ;; Optional: Activate minimal skin
 ;; (git-gutter-fr+-minimal)
 
+;;; javascript mode
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(setq js2-highlight-level 3)
+(add-hook 'js2-mode-hook
+	  (lambda ()
+	    ;; (setq whitespace-action '(auto-cleanup))
+	    ;; (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
+	    ;; (whitespace-mode 1)
+	    ;; (highlight-indentation-mode 1)
+	    ;; (highlight-indentation-current-column-mode 1)
+	    ;; (auto-complete-mode 1)
+	    (define-key js2-mode-map "{" 'paredit-open-curly)
+	    (define-key js2-mode-map "}" 'paredit-close-curly-and-newline)
+	    (my-paredit-nonlisp)
+	    (ac-js2-mode)
+	    (tern-mode t)
+	    (tern-ac-setup)
+	    ))
+
+
+;; 在mac下显示中文字体
+(defun show ()
+  "Show chinese font."
+  (interactive)
+  (set-fontset-font
+   (frame-parameter nil 'font)
+   'han
+   (font-spec :family "Hiragino Sans GB" ))
+)
+(add-hook 'emacs-startup-hook 'show)
+
+;;; auto-complete
+(global-auto-complete-mode 1)
+
+;;; flycheck mode
+(global-flycheck-mode 1)
+
+(defvar new-M-r (lookup-key global-map (kbd "C-x r")))
+(global-set-key (kbd "M-r") new-M-r)
+
+
+(provide '.emacs)
+
+;;; .emacs ends here
