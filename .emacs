@@ -40,7 +40,7 @@ Return a list of installed packages or nil for every skipped package."
 	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet
 	     dired+ go-mode go-autocomplete quickrun sourcemap flycheck git-gutter+
 	     git-gutter-fringe+ highlight-indentation js3-mode paredit
-	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm))
+	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm helm-projectile))
 
 (defun my-paredit-nonlisp ()
   "Turn on paredit mode for non-lisps."
@@ -56,18 +56,19 @@ Return a list of installed packages or nil for every skipped package."
 (ample-theme)
 (ac-config-default)
 (icy-mode 1)
-(iswitchb-mode 1)
+(setq-default indent-tabs-mode nil)
 
+;;;
 (setq exec-path (append '("/Users/airead/Downloads/mxcl-homebrew-2f541f3/bin/"
 	  "/usr/local/bin/"
 	  )
 	exec-path))
 
 ;;; easy keys to split window.  Key based on ErgoEmacs keybinding
-(global-set-key (kbd "M-3") 'delete-other-windows) ; expand current pane
-(global-set-key (kbd "M-4") 'split-window-vertically) ; split pane top/bottom
-(global-set-key (kbd "M-1") 'split-window-horizontally) ; split pane left/right
-(global-set-key (kbd "M-2") 'delete-window) ; close current pane
+(global-set-key (kbd "C-M-1") 'delete-other-windows) ; expand current pane
+(global-set-key (kbd "C-M-2") 'split-window-vertically) ; split pane top/bottom
+(global-set-key (kbd "C-M-3") 'split-window-horizontally) ; split pane left/right
+(global-set-key (kbd "C-M-4") 'delete-window) ; close current pane
 (global-set-key (kbd "M-8") 'other-window) ; cursor to other pane
 
 (global-set-key (kbd "M-9") 'ace-window)
@@ -126,11 +127,17 @@ Return a list of installed packages or nil for every skipped package."
 	    (whitespace-mode 1)
 	    (highlight-indentation-mode 1)
 	    (highlight-indentation-current-column-mode 1)
+	    (coffee-cos-mode t)
+	    (flycheck-mode t)
+        (define-key coffee-mode-map (kbd "M-.") 'helm-etags-select)
+        (auto-complete-mode 1)
+        (helm-gtags-mode 1)
 	    ))
 
-;;; html
+;;; html mode
 (add-hook 'html-mode-hook
 	  (lambda ()
+            (auto-complete-mode 1)
 	    (set (make-local-variable 'sgml-basic-offset) 4)))
 
 ;;; projectile
@@ -150,20 +157,32 @@ Return a list of installed packages or nil for every skipped package."
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 (setq js2-highlight-level 3)
 (add-hook 'js2-mode-hook
-	  (lambda ()
-	    ;; (setq whitespace-action '(auto-cleanup))
-	    ;; (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
-	    ;; (whitespace-mode 1)
-	    ;; (highlight-indentation-mode 1)
-	    ;; (highlight-indentation-current-column-mode 1)
-	    ;; (auto-complete-mode 1)
-	    (define-key js2-mode-map "{" 'paredit-open-curly)
-	    (define-key js2-mode-map "}" 'paredit-close-curly-and-newline)
-	    (my-paredit-nonlisp)
-	    (ac-js2-mode)
-	    (tern-mode t)
-	    (tern-ac-setup)
-	    ))
+          (lambda ()
+            (setq whitespace-action '(auto-cleanup))
+            (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
+            (whitespace-mode 1)
+            (highlight-indentation-mode 1)
+            (highlight-indentation-current-column-mode 1)
+            (ac-js2-mode)
+            (tern-mode t)
+            (tern-ac-setup)
+            (flycheck-mode t)
+            (helm-gtags-mode)
+            (set-variable 'indent-tabs-mode nil)
+            (set (make-local-variable 'parens-require-spaces) nil)
+            (setq tab-width 4)
+            ))
+
+;;; python mode
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq whitespace-action '(auto-cleanup))
+            (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
+            (whitespace-mode 1)
+            (highlight-indentation-mode 1)
+            (highlight-indentation-current-column-mode 1)
+            (helm-gtags-mode 1)
+            ))
 
 
 ;; 在mac下显示中文字体
@@ -181,11 +200,39 @@ Return a list of installed packages or nil for every skipped package."
 (global-auto-complete-mode 1)
 
 ;;; flycheck mode
-(global-flycheck-mode 1)
+(global-set-key [(control f5)] 'flycheck-list-errors)
+
+;;; helm
+(setq helm-command-prefix-key "C-c h")
+(require 'helm-config)
+(helm-mode 1)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-M-o") 'helm-projectile)
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
+
+;;; gtags
+(custom-set-variables
+ '(helm-gtags-prefix-key "C-t")
+ '(helm-gtags-path-style 'relative)
+ '(helm-gtags-ignore-case t)
+ '(helm-gtags-auto-update t))
+
+;; key bindings
+(eval-after-load "helm-gtags"
+  '(progn
+     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-select)
+     ;; (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
+     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
+     (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
+     (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+     (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+     (define-key helm-gtags-mode-map (kbd "M-*") 'helm-gtags-pop-stack)))
 
 (defvar new-M-r (lookup-key global-map (kbd "C-x r")))
 (global-set-key (kbd "M-r") new-M-r)
-
 
 (provide '.emacs)
 
