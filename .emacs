@@ -22,14 +22,20 @@
 (defun ensure-package-installed (packages)
   "Assure every PACKAGES is installed, ask for installation if it’s not.
 Return a list of installed packages or nil for every skipped package."
-  (mapcar
-   (lambda (package)
-     (if (package-installed-p package)
-         nil
-       (if (y-or-n-p (concat (format "Package %s is missing.  Install it?" package)))
-           (package-install package)
-         package)))
-   packages))
+  (let ((ensure nil)
+	(first-confirm nil))
+    (mapcar
+     (lambda (package)
+       (if (package-installed-p package)
+	   nil
+	 (unless first-confirm
+	   (setq first-confirm t)
+	   (if (y-or-n-p (concat (format "Package %s is missing.  Install it?" package)))
+	     (setq ensure t)))
+	 (if ensure
+	     (package-install package)
+	   package)))
+    packages)))
 
 ;; make sure to have downloaded archive description.
 (or (file-exists-p package-user-dir)
