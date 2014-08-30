@@ -1,0 +1,16 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: tabParams
+# key: tabParams
+# --
+$scope.tabParams = new ngTableParams {
+  page: 1
+  count: 20
+}, {
+  counts: [10, 20, 50],
+  total: $scope.$0.length,
+  getData: ($defer, params) ->
+    tabData = $scope.$0
+    tabElems = tabData.slice((params.page() - 1) * params.count(), params.page() * params.count())
+    params.total tabData
+    $defer.resolve tabElems
+}

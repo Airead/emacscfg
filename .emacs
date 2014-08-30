@@ -43,7 +43,7 @@ Return a list of installed packages or nil for every skipped package."
 	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm helm-projectile
              goto-last-change))
 
-(add-to-list 'load-path (expand-file-name "lib" config-base-dir))
+(add-to-list 'load-path (expand-file-name "lib/" config-base-dir))
 
 (defun my-paredit-nonlisp ()
   "Turn on paredit mode for non-lisps."
@@ -84,6 +84,8 @@ Return a list of installed packages or nil for every skipped package."
 (global-set-key (kbd "C-\"") 'tabbar-forward)
 
 ;;; yasnipets mode
+(require 'yasnippet)
+(add-to-list 'yas-snippet-dirs (expand-file-name "snippets" config-base-dir))
 (yas-global-mode 1)
 (global-set-key (kbd "C-;") 'yas-expand)
 
@@ -125,6 +127,7 @@ Return a list of installed packages or nil for every skipped package."
 (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
 (add-hook 'coffee-mode-hook
 	  (lambda ()
+            (message "coffee hook")
 	    (setq whitespace-action '(auto-cleanup))
 	    (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 	    (whitespace-mode 1)
@@ -132,9 +135,8 @@ Return a list of installed packages or nil for every skipped package."
 	    (highlight-indentation-current-column-mode 1)
 	    (coffee-cos-mode t)
 	    (flycheck-mode t)
-        (define-key coffee-mode-map (kbd "M-.") 'helm-etags-select)
-        (auto-complete-mode 1)
-        (helm-gtags-mode 1)
+            (define-key coffee-mode-map (kbd "M-.") 'helm-etags-select)
+            (auto-complete-mode 1)
 	    ))
 
 ;;; html mode
@@ -170,7 +172,6 @@ Return a list of installed packages or nil for every skipped package."
             (tern-mode t)
             (tern-ac-setup)
             (flycheck-mode t)
-            (helm-gtags-mode)
             (set-variable 'indent-tabs-mode nil)
             (set (make-local-variable 'parens-require-spaces) nil)
             (setq tab-width 4)
@@ -184,7 +185,6 @@ Return a list of installed packages or nil for every skipped package."
             (whitespace-mode 1)
             (highlight-indentation-mode 1)
             (highlight-indentation-current-column-mode 1)
-            (helm-gtags-mode 1)
             ))
 
 
@@ -229,12 +229,17 @@ Return a list of installed packages or nil for every skipped package."
  '(helm-gtags-ignore-case t)
  '(helm-gtags-auto-update t))
 
+(dolist (hook '(coffee-mode-hook
+                emacs-lisp-mode-hook
+                ))
+  (add-hook hook (lambda () (helm-gtags-mode 1))))
+
 ;; key bindings
 (eval-after-load "helm-gtags"
   '(progn
-     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-select)
+     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
      ;; (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
-     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
+     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-select)
      (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
      (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
      (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
@@ -242,6 +247,14 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; TODO hs mode
 ;; (require 'hideshowvis)
+
+(dolist (hook '(coffee-mode-hook
+                emacs-lisp-mode-hook
+                ))
+  (add-hook hook (lambda () (hs-minor-mode 1)
+                    (message "lisp hook")
+                 )))
+
 (global-set-key (kbd "M-o h") 'hs-hide-all)
 (global-set-key (kbd "M-o s") 'hs-show-all)
 (global-set-key (kbd "M-o l") 'hs-hide-level)
