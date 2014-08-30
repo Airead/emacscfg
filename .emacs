@@ -40,7 +40,10 @@ Return a list of installed packages or nil for every skipped package."
 	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet
 	     dired+ go-mode go-autocomplete quickrun sourcemap flycheck git-gutter+
 	     git-gutter-fringe+ highlight-indentation js3-mode paredit
-	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm helm-projectile))
+	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm helm-projectile
+             goto-last-change))
+
+(add-to-list 'load-path (expand-file-name "lib" config-base-dir))
 
 (defun my-paredit-nonlisp ()
   "Turn on paredit mode for non-lisps."
@@ -201,6 +204,10 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; flycheck mode
 (global-set-key [(control f5)] 'flycheck-list-errors)
+(setq flycheck-check-syntax-automatically '(mode-enabled save new-line))
+
+;;; goto-last-change
+(global-set-key (kbd "C-`") 'goto-last-change)
 
 ;;; helm
 (setq helm-command-prefix-key "C-c h")
@@ -212,6 +219,8 @@ Return a list of installed packages or nil for every skipped package."
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-M-o") 'helm-projectile)
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
+(global-set-key (kbd "C-M-`") 'helm-all-mark-rings)
+(global-set-key (kbd "C-c h o") 'helm-occur)
 
 ;;; gtags
 (custom-set-variables
@@ -230,6 +239,13 @@ Return a list of installed packages or nil for every skipped package."
      (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
      (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
      (define-key helm-gtags-mode-map (kbd "M-*") 'helm-gtags-pop-stack)))
+
+;;; TODO hs mode
+;; (require 'hideshowvis)
+(global-set-key (kbd "M-o h") 'hs-hide-all)
+(global-set-key (kbd "M-o s") 'hs-show-all)
+(global-set-key (kbd "M-o l") 'hs-hide-level)
+(global-set-key (kbd "M-o M-o") 'hs-toggle-hiding)
 
 (defvar new-M-r (lookup-key global-map (kbd "C-x r")))
 (global-set-key (kbd "M-r") new-M-r)
