@@ -47,7 +47,7 @@ Return a list of installed packages or nil for every skipped package."
 	     dired+ go-mode go-autocomplete quickrun sourcemap flycheck git-gutter+
 	     git-gutter-fringe+ highlight-indentation js3-mode paredit
 	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm helm-projectile
-             goto-last-change))
+             goto-last-change rainbow-delimiters smart-mode-line))
 
 (add-to-list 'load-path (expand-file-name "lib/" config-base-dir))
 
@@ -253,7 +253,6 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; TODO hs mode
 ;; (require 'hideshowvis)
-
 (dolist (hook '(coffee-mode-hook
                 emacs-lisp-mode-hook
                 ))
@@ -265,6 +264,21 @@ Return a list of installed packages or nil for every skipped package."
 (global-set-key (kbd "M-o s") 'hs-show-all)
 (global-set-key (kbd "M-o l") 'hs-hide-level)
 (global-set-key (kbd "M-o M-o") 'hs-toggle-hiding)
+
+;;; smart-mode-line
+(setq sml/no-confirm-load-theme t)
+(sml/setup)
+(sml/apply-theme 'dark)
+(dolist (mode '(" ICY"
+                " Helm"
+                " yas"
+                " AC"
+                " hs"
+                " HelmGtags"
+                " MRev"
+                " ws"
+                " GitGutter"))
+  (add-to-list 'rm-excluded-modes mode))
 
 (defvar new-M-r (lookup-key global-map (kbd "C-x r")))
 (global-set-key (kbd "M-r") new-M-r)
