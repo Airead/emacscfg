@@ -1,9 +1,8 @@
 ;;; .emacs --- airead Fan emacs config
 
-;;; Code:
-
 ;;; Commentary:
 
+;;; Code:
 
 (setq default-directory (concat (getenv "HOME") "/"))
 (defvar config-base-dir (file-name-directory load-file-name))
@@ -47,7 +46,7 @@ Return a list of installed packages or nil for every skipped package."
 	     dired+ go-mode go-autocomplete quickrun sourcemap flycheck git-gutter+
 	     git-gutter-fringe+ highlight-indentation js3-mode paredit
 	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm helm-projectile
-             goto-last-change rainbow-delimiters smart-mode-line))
+             goto-last-change rainbow-delimiters smart-mode-line web-mode))
 
 (add-to-list 'load-path (expand-file-name "lib/" config-base-dir))
 
@@ -62,7 +61,11 @@ Return a list of installed packages or nil for every skipped package."
 (add-to-list 'default-frame-alist '(font . "monaco-15"))
 (global-linum-mode 1)
 (show-paren-mode t)
-(ample-theme)
+;; (load-theme 'ample-zen t)
+;; (load-theme 'ample)
+(load-theme 'monokai t)
+;; (load-theme 'cyberpunk)
+
 (ac-config-default)
 (icy-mode 1)
 (setq-default indent-tabs-mode nil)
@@ -92,8 +95,13 @@ Return a list of installed packages or nil for every skipped package."
 ;;; yasnipets mode
 (require 'yasnippet)
 (add-to-list 'yas-snippet-dirs (expand-file-name "snippets" config-base-dir))
-(yas-global-mode 1)
+(yas-reload-all)
 (global-set-key (kbd "C-;") 'yas-expand)
+(dolist (hook '(coffee-mode-hook
+                emacs-lisp-mode-hook
+                ))
+  (add-hook hook (lambda () (yas-minor-mode 1))))
+
 
 ;;; magit
 (global-set-key "\C-ci" 'magit-status)
@@ -107,6 +115,17 @@ Return a list of installed packages or nil for every skipped package."
 (global-set-key (kbd "C-M-'") 'highlight-symbol-remove-all)
 (global-set-key (kbd "C-,") 'highlight-symbol-prev)
 (global-set-key (kbd "C-.") 'highlight-symbol-next)
+
+;;; highlight-indentation
+(dolist (hook '(coffee-mode-hook
+                ))
+  (add-hook hook (lambda ()
+                   (highlight-indentation-mode 1)
+                   (highlight-indentation-current-column-mode 1)
+                   (set-face-background 'highlight-indentation-face "#31322b")
+                   (set-face-background 'highlight-indentation-current-column-face "#5d5d57")
+                   )))
+
 
 ;;; use ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -137,8 +156,6 @@ Return a list of installed packages or nil for every skipped package."
 	    (setq whitespace-action '(auto-cleanup))
 	    (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 	    (whitespace-mode 1)
-	    (highlight-indentation-mode 1)
-	    (highlight-indentation-current-column-mode 1)
 	    (coffee-cos-mode t)
 	    (flycheck-mode t)
             (define-key coffee-mode-map (kbd "M-.") 'helm-etags-select)
@@ -150,6 +167,43 @@ Return a list of installed packages or nil for every skipped package."
 	  (lambda ()
             (auto-complete-mode 1)
 	    (set (make-local-variable 'sgml-basic-offset) 4)))
+
+;;; web mode
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(defun my-web-mode-element-beginning-begain ()
+  (interactive)
+  (let (pos)
+    (backward-char)
+    (setq pos (web-mode-element-beginning-position))
+    (when pos (goto-char pos)
+          pos)
+    ))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (setq web-mode-markup-indent-offset 4)
+            (setq web-mode-css-indent-offset 4)
+            (setq web-mode-code-indent-offset 4)
+
+            ;; key binding
+            (define-key web-mode-map (kbd "C-M-u") 'web-mode-element-parent)
+            (define-key web-mode-map (kbd "C-M-p") 'my-web-mode-element-beginning-begain)
+            (define-key web-mode-map (kbd "C-M-n") 'web-mode-element-end)
+            (define-key web-mode-map (kbd "C-M-c") 'web-mode-element-clone)
+            (define-key web-mode-map (kbd "M-o M-o") 'web-mode-element-children-fold-or-unfold)
+            (define-key web-mode-map (kbd "C-M-i") 'web-mode-element-content-select)
+            (define-key web-mode-map (kbd "C-M-k") 'web-mode-element-kill)
+            (define-key web-mode-map (kbd "M-n") 'web-mode-tag-next)
+            (define-key web-mode-map (kbd "M-p") 'web-mode-tag-previous)
+            (define-key web-mode-map (kbd "C-M-w") 'web-mode-element-wrap)
+            (define-key web-mode-map (kbd "M-a") 'web-mode-attribute-beginning)
+            (define-key web-mode-map (kbd "M-e") 'web-mode-attribute-end)
+            ))
+(defun myl ()
+  "Display text properties at point"
+  (interactive)
+  (setq re (web-mode-language-at-pos (point)))
+  (message re))
+
 
 ;;; projectile
 (projectile-global-mode 1)
@@ -172,8 +226,6 @@ Return a list of installed packages or nil for every skipped package."
             (setq whitespace-action '(auto-cleanup))
             (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
             (whitespace-mode 1)
-            (highlight-indentation-mode 1)
-            (highlight-indentation-current-column-mode 1)
             (ac-js2-mode)
             (tern-mode t)
             (tern-ac-setup)
@@ -189,8 +241,6 @@ Return a list of installed packages or nil for every skipped package."
             (setq whitespace-action '(auto-cleanup))
             (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
             (whitespace-mode 1)
-            (highlight-indentation-mode 1)
-            (highlight-indentation-current-column-mode 1)
             ))
 
 
@@ -241,15 +291,20 @@ Return a list of installed packages or nil for every skipped package."
   (add-hook hook (lambda () (helm-gtags-mode 1))))
 
 ;; key bindings
-(eval-after-load "helm-gtags"
-  '(progn
-     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
-     ;; (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
-     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-select)
-     (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
-     (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-     (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
-     (define-key helm-gtags-mode-map (kbd "M-*") 'helm-gtags-pop-stack)))
+(global-set-key (kbd "M-s M-a") 'helm-gtags-select)
+(global-set-key (kbd "M-t") 'helm-gtags-find-tag)
+(global-set-key (kbd "M-*") 'helm-gtags-pop-stack)
+(global-set-key (kbd "C-c <") 'helm-gtags-pop-stack)
+(global-set-key (kbd "C-c >") 'helm-gtags-pop-stack)
+;; (eval-after-load "helm-gtags"
+;;   '(progn
+;;      (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
+;;      ;; (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
+;;      (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-select)
+;;      (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
+;;      (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+;;      (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+;;      (define-key helm-gtags-mode-map (kbd "M-*") 'helm-gtags-pop-stack)))
 
 ;;; TODO hs mode
 ;; (require 'hideshowvis)
