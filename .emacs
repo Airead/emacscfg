@@ -50,13 +50,6 @@ Return a list of installed packages or nil for every skipped package."
 
 (add-to-list 'load-path (expand-file-name "lib/" config-base-dir))
 
-(defun my-paredit-nonlisp ()
-  "Turn on paredit mode for non-lisps."
-  (interactive)
-  (set (make-local-variable 'paredit-space-for-delimiter-predicates)
-       '((lambda (endp delimiter) nil)))
-  (paredit-mode 1))
-
 ;;; set font
 (add-to-list 'default-frame-alist '(font . "monaco-15"))
 (global-linum-mode 1)
@@ -69,6 +62,10 @@ Return a list of installed packages or nil for every skipped package."
 (ac-config-default)
 (icy-mode 1)
 (setq-default indent-tabs-mode nil)
+
+;;; save place
+(require 'saveplace)
+(setq-default save-place t)
 
 ;;;
 (setq exec-path (append '("/Users/airead/Downloads/mxcl-homebrew-2f541f3/bin/"
@@ -102,13 +99,26 @@ Return a list of installed packages or nil for every skipped package."
                 python-mode-hook
                 emacs-lisp-mode-hook
                 ))
-  (add-hook hook (lambda () (yas-minor-mode 1))))
+  (add-hook hook
+            (lambda () (yas-minor-mode 1)
+              (setq yas-keymap
+                (let ((map (make-sparse-keymap)))
+                  (define-key map [(tab)]       'yas-next-field)
+                  (define-key map (kbd "C-l")   'yas-next-field)
+                  (define-key map [(shift tab)] 'yas-prev-field)
+                  (define-key map [backtab]     'yas-prev-field)
+                  (define-key map (kbd "C-g")   'yas-abort-snippet)
+                  (define-key map (kbd "C-d")   'yas-skip-and-clear-or-delete-char)
+                  map))
+              )))
 
 
 ;;; paredit mode
 (dolist (hook '(emacs-lisp-mode-hook
                 ))
-  (add-hook hook (lambda () (paredit-mode 1))))
+  (add-hook hook (lambda () 
+                   (paredit-mode 1)
+                   )))
 
 
 ;;; magit
