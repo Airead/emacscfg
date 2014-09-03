@@ -96,11 +96,19 @@ Return a list of installed packages or nil for every skipped package."
 (require 'yasnippet)
 (add-to-list 'yas-snippet-dirs (expand-file-name "snippets" config-base-dir))
 (yas-reload-all)
-(global-set-key (kbd "C-;") 'yas-expand)
+(define-key yas-minor-mode-map (kbd "C-;") 'yas-expand)
 (dolist (hook '(coffee-mode-hook
+                js2-mode-hook
+                python-mode-hook
                 emacs-lisp-mode-hook
                 ))
   (add-hook hook (lambda () (yas-minor-mode 1))))
+
+
+;;; paredit mode
+(dolist (hook '(emacs-lisp-mode-hook
+                ))
+  (add-hook hook (lambda () (paredit-mode 1))))
 
 
 ;;; magit
@@ -134,7 +142,8 @@ Return a list of installed packages or nil for every skipped package."
 (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
 
 ;;; quickrun
-(global-set-key (kbd "<f9>") 'quickrun)
+(global-set-key (kbd "C-<f9>") 'quickrun)
+(global-set-key (kbd "<f9>") 'smart-compile)
 
 (quickrun-add-command "go"
                       '((:command . "go")
@@ -152,7 +161,6 @@ Return a list of installed packages or nil for every skipped package."
 (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
 (add-hook 'coffee-mode-hook
 	  (lambda ()
-            (message "coffee hook")
 	    (setq whitespace-action '(auto-cleanup))
 	    (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 	    (whitespace-mode 1)
@@ -204,6 +212,11 @@ Return a list of installed packages or nil for every skipped package."
   (setq re (web-mode-language-at-pos (point)))
   (message re))
 
+;;; markdown mode
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
 
 ;;; projectile
 (projectile-global-mode 1)
@@ -215,11 +228,14 @@ Return a list of installed packages or nil for every skipped package."
 ;;; git gutter
 (require 'git-gutter-fringe+)
 (global-git-gutter+-mode 1)
+(define-key git-gutter+-mode-map (kbd "C-M-<down>") 'git-gutter+-next-hunk)
+(define-key git-gutter+-mode-map (kbd "C-M-<up>") 'git-gutter+-previous-hunk)
 ;; Optional: Activate minimal skin
 ;; (git-gutter-fr+-minimal)
 
 ;;; javascript mode
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;; (setq-default js2-global-externs '("module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON"))
 (setq js2-highlight-level 3)
 (add-hook 'js2-mode-hook
           (lambda ()
@@ -233,6 +249,7 @@ Return a list of installed packages or nil for every skipped package."
             (set-variable 'indent-tabs-mode nil)
             (set (make-local-variable 'parens-require-spaces) nil)
             (setq tab-width 4)
+            (setq js2-global-externs '("module" "exports" "require"))
             ))
 
 ;;; python mode
@@ -260,7 +277,7 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; flycheck mode
 (global-set-key [(control f5)] 'flycheck-list-errors)
-(setq flycheck-check-syntax-automatically '(mode-enabled save new-line))
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
 
 ;;; goto-last-change
 (global-set-key (kbd "C-`") 'goto-last-change)

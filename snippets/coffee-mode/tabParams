@@ -7,10 +7,10 @@ $scope.tabParams = new ngTableParams {
   count: 20
 }, {
   counts: [10, 20, 50],
-  total: $scope.$0.length,
+  total: $scope.$1.length,
   getData: ($defer, params) ->
-    tabData = $scope.$0
+    tabData = $scope.$1
     tabElems = tabData.slice((params.page() - 1) * params.count(), params.page() * params.count())
-    params.total tabData
+    params.total tabData.length
     $defer.resolve tabElems
 }
