@@ -98,7 +98,7 @@ Return a list of installed packages or nil for every skipped package."
                 js2-mode-hook
                 python-mode-hook
                 emacs-lisp-mode-hook
-                ))
+                web-mode-hook))
   (add-hook hook
             (lambda () (yas-minor-mode 1)
               (setq yas-keymap
@@ -116,24 +116,16 @@ Return a list of installed packages or nil for every skipped package."
 ;;; paredit mode
 (dolist (hook '(emacs-lisp-mode-hook
                 ))
-  (add-hook hook (lambda () 
+  (add-hook hook (lambda ()
                    (paredit-mode 1)
                    )))
-
-;;; flycheck mode
-(dolist (hook '(emacs-lisp-mode-hook
-                coffee-mode-hook
-                python-mode-hook
-                js2-mode-hook))
-  (add-hook hook (lambda () 
-                   flycheck-mode 1)))
-
 
 ;;; autopair mode
 (dolist (hook '(python-mode-hook
                 coffee-mode-hook
+                web-mode-hook
                 js2-mode-hook))
-  (add-hook hook (lambda () 
+  (add-hook hook (lambda ()
                    (autopair-mode 1))))
 ;;; magit
 (global-set-key "\C-ci" 'magit-status)
@@ -202,6 +194,7 @@ Return a list of installed packages or nil for every skipped package."
 ;;; web mode
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (defun my-web-mode-element-beginning-begain ()
+  "Doc."
   (interactive)
   (let (pos)
     (backward-char)
@@ -211,6 +204,8 @@ Return a list of installed packages or nil for every skipped package."
     ))
 (add-hook 'web-mode-hook
           (lambda ()
+            (yas-activate-extra-mode 'html-mode)
+            (yas-activate-extra-mode 'nxml-mode)
             (setq web-mode-markup-indent-offset 4)
             (setq web-mode-css-indent-offset 4)
             (setq web-mode-code-indent-offset 4)
@@ -230,7 +225,7 @@ Return a list of installed packages or nil for every skipped package."
             (define-key web-mode-map (kbd "M-e") 'web-mode-attribute-end)
             ))
 (defun myl ()
-  "Display text properties at point"
+  "Display text properties at point."
   (interactive)
   (setq re (web-mode-language-at-pos (point)))
   (message re))
@@ -300,6 +295,7 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; auto-complete
 (global-auto-complete-mode 1)
+(add-to-list 'ac-modes 'web-mode)
 
 ;;; direx
 (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
@@ -308,6 +304,13 @@ Return a list of installed packages or nil for every skipped package."
 (add-hook 'jedi-mode-hook 'jedi-direx:setup)
 
 ;;; flycheck mode
+(dolist (hook '(emacs-lisp-mode-hook
+                coffee-mode-hook
+                python-mode-hook
+                js2-mode-hook))
+  (add-hook hook (lambda ()
+                    (flycheck-mode) 1)))
+
 (global-set-key [(control f5)] 'flycheck-list-errors)
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
