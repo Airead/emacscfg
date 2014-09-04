@@ -280,6 +280,10 @@ Return a list of installed packages or nil for every skipped package."
             (setq whitespace-action '(auto-cleanup))
             (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
             (whitespace-mode 1)
+            (setq jedi:complete-on-dot t)
+            (setq jedi:use-shortcuts t)
+            (jedi:setup)
+            (define-key python-mode-map "\C-cx" 'jedi-direx:pop-to-buffer)
             ))
 
 
@@ -296,6 +300,12 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; auto-complete
 (global-auto-complete-mode 1)
+
+;;; direx
+(global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
+
+;; jedi direx
+(add-hook 'jedi-mode-hook 'jedi-direx:setup)
 
 ;;; flycheck mode
 (global-set-key [(control f5)] 'flycheck-list-errors)
