@@ -120,7 +120,21 @@ Return a list of installed packages or nil for every skipped package."
                    (paredit-mode 1)
                    )))
 
+;;; flycheck mode
+(dolist (hook '(emacs-lisp-mode-hook
+                coffee-mode-hook
+                python-mode-hook
+                js2-mode-hook))
+  (add-hook hook (lambda () 
+                   flycheck-mode 1)))
 
+
+;;; autopair mode
+(dolist (hook '(python-mode-hook
+                coffee-mode-hook
+                js2-mode-hook))
+  (add-hook hook (lambda () 
+                   (autopair-mode 1))))
 ;;; magit
 (global-set-key "\C-ci" 'magit-status)
 
@@ -175,7 +189,6 @@ Return a list of installed packages or nil for every skipped package."
 	    (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 	    (whitespace-mode 1)
 	    (coffee-cos-mode t)
-	    (flycheck-mode t)
             (define-key coffee-mode-map (kbd "M-.") 'helm-etags-select)
             (auto-complete-mode 1)
 	    ))
@@ -255,7 +268,6 @@ Return a list of installed packages or nil for every skipped package."
             (ac-js2-mode)
             (tern-mode t)
             (tern-ac-setup)
-            (flycheck-mode t)
             (set-variable 'indent-tabs-mode nil)
             (set (make-local-variable 'parens-require-spaces) nil)
             (setq tab-width 4)
