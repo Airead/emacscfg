@@ -115,6 +115,8 @@ Return a list of installed packages or nil for every skipped package."
 
 ;;; paredit mode
 (dolist (hook '(emacs-lisp-mode-hook
+                slime-mode-hook
+                slime-repl-mode-hook
                 ))
   (add-hook hook (lambda ()
                    (paredit-mode 1)
@@ -209,6 +211,9 @@ Return a list of installed packages or nil for every skipped package."
             (setq web-mode-markup-indent-offset 4)
             (setq web-mode-css-indent-offset 4)
             (setq web-mode-code-indent-offset 4)
+            (setq web-mode-ac-sources-alist
+                  '(("css" . (ac-source-css-property))
+                    ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
 
             ;; key binding
             (define-key web-mode-map (kbd "C-M-u") 'web-mode-element-parent)
@@ -279,6 +284,8 @@ Return a list of installed packages or nil for every skipped package."
             (setq jedi:use-shortcuts t)
             (jedi:setup)
             (define-key python-mode-map "\C-cx" 'jedi-direx:pop-to-buffer)
+            (define-key python-mode-map (kbd "C-c f") 'py-autopep8)
+            (setq py-autopep8-options '("--max-line-length=120"))
             ))
 
 
@@ -386,6 +393,19 @@ Return a list of installed packages or nil for every skipped package."
                 " ws"
                 " GitGutter"))
   (add-to-list 'rm-excluded-modes mode))
+
+;;; slime mode
+(setq inferior-lisp-program "sbcl")
+(slime-setup '(slime-fancy))
+
+(add-hook 'slime-mode-hook (lambda ()
+                             (auto-complete-mode 1)
+                             (set-up-slime-ac)))
+
+(add-hook 'slime-repl-mode-hook (lambda ()
+                             (auto-complete-mode 1)
+                             (set-up-slime-ac)))
+
 
 (defvar new-M-r (lookup-key global-map (kbd "C-x r")))
 (global-set-key (kbd "M-r") new-M-r)
