@@ -1,0 +1,10 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: utf8 sys
+# key: sys
+# binding: direct-keybinding
+# --
+import sys
+
+reload(sys)
+sys.setdefaultencoding('UTF-8')
+$0

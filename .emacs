@@ -98,7 +98,8 @@ Return a list of installed packages or nil for every skipped package."
                 js2-mode-hook
                 python-mode-hook
                 emacs-lisp-mode-hook
-                web-mode-hook))
+                web-mode-hook
+                less-css-mode-hook))
   (add-hook hook
             (lambda () (yas-minor-mode 1)
               (setq yas-keymap
@@ -228,6 +229,8 @@ Return a list of installed packages or nil for every skipped package."
             (define-key web-mode-map (kbd "C-M-w") 'web-mode-element-wrap)
             (define-key web-mode-map (kbd "M-a") 'web-mode-attribute-beginning)
             (define-key web-mode-map (kbd "M-e") 'web-mode-attribute-end)
+
+            (define-key web-mode-map (kbd "C-c C-c") (lambda ()  (interactive) (imp--on-change nil t)) )
             ))
 (defun myl ()
   "Display text properties at point."
@@ -271,7 +274,7 @@ Return a list of installed packages or nil for every skipped package."
             (set-variable 'indent-tabs-mode nil)
             (set (make-local-variable 'parens-require-spaces) nil)
             (setq tab-width 4)
-            (setq js2-global-externs '("module" "exports" "require"))
+            (setq js2-global-externs '("module" "exports" "require" "PIXI"))
             ))
 
 ;;; python mode
@@ -336,6 +339,7 @@ Return a list of installed packages or nil for every skipped package."
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
 (global-set-key (kbd "C-M-`") 'helm-all-mark-rings)
 (global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "M-i") 'helm-semantic-or-imenu)
 
 ;;; gtags
 (custom-set-variables
@@ -346,7 +350,7 @@ Return a list of installed packages or nil for every skipped package."
 
 (dolist (hook '(coffee-mode-hook
                 emacs-lisp-mode-hook
-                ))
+                c-mode-hook))
   (add-hook hook (lambda () (helm-gtags-mode 1))))
 
 ;; key bindings
@@ -406,6 +410,9 @@ Return a list of installed packages or nil for every skipped package."
                              (auto-complete-mode 1)
                              (set-up-slime-ac)))
 
+
+;;; http server
+(setq httpd-port 9090)
 
 (defvar new-M-r (lookup-key global-map (kbd "C-x r")))
 (global-set-key (kbd "M-r") new-M-r)
