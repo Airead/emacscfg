@@ -36,31 +36,101 @@ Return a list of installed packages or nil for every skipped package."
 	   package)))
     packages)))
 
-;; make sure to have downloaded archive description.
 (or (file-exists-p package-user-dir)
     (package-refresh-contents))
 (ensure-package-installed
- '(ace-window ace-jump-mode ample-theme auto-complete bookmark+ coffee-mode
-	     color-theme es-windows icicles magit git-rebase-mode git-commit-mode
-	     nodejs-repl popup projectile pkg-info epl dash s tabbar w3m yasnippet
-	     dired+ go-mode go-autocomplete quickrun sourcemap flycheck git-gutter+
-	     git-gutter-fringe+ highlight-indentation js3-mode paredit
-	     js2-mode ac-js2 js2-refactor tern tern-auto-complete helm helm-projectile
-             goto-last-change rainbow-delimiters smart-mode-line web-mode))
+ '(ace-window 
+   ace-jump-mode
+   ample-theme 
+   auto-complete 
+   bookmark+ 
+   coffee-mode
+   color-theme 
+   es-windows 
+   icicles magit 
+   git-rebase-mode 
+   git-commit-mode
+   nodejs-repl 
+   popup 
+   projectile 
+   pkg-info 
+   epl 
+   dash 
+   s 
+   tabbar 
+   w3m 
+   yasnippet
+   dired+ 
+   go-mode 
+   go-autocomplete 
+   quickrun 
+   sourcemap 
+   flycheck 
+   git-gutter+
+   git-gutter-fringe+ 
+   highlight-indentation 
+   js3-mode 
+   paredit
+   js2-mode 
+   ac-js2 
+   js2-refactor 
+   tern 
+   tern-auto-complete 
+   helm 
+   helm-projectile
+   goto-last-change 
+   rainbow-delimiters 
+   smart-mode-line 
+   web-mode
+   slime
+   autopair
+   helm-gtags
+   impatient-mode
+   smart-compile
+   highlight-symbol
+   jedi
+   jedi-direx
+   py-autopep8
+   ))
 
+;; make sure to have downloaded archive description.
 (add-to-list 'load-path (expand-file-name "lib/" config-base-dir))
 
 ;;; set font
 (add-to-list 'default-frame-alist '(font . "monaco-15"))
 (global-linum-mode 1)
 (show-paren-mode t)
+
+;;; easy keys to split window.  Key based on ErgoEmacs keybinding
+(global-set-key (kbd "C-M-1") 'delete-other-windows) ; expand current pane
+(global-set-key (kbd "C-M-2") 'split-window-vertically) ; split pane top/bottom
+(global-set-key (kbd "C-M-3") 'split-window-horizontally) ; split pane left/right
+(global-set-key (kbd "C-M-4") 'delete-window) ; close current pane
+(global-set-key (kbd "M-8") 'other-window) ; cursor to other pane
+
+(global-set-key (kbd "M-9") 'ace-window)
+
 ;; (load-theme 'ample-zen t)
 ;; (load-theme 'ample)
 (load-theme 'monokai t)
 ;; (load-theme 'cyberpunk)
 
+;;; helm
+(setq helm-command-prefix-key "C-c h")
+(require 'helm-config)
+(helm-mode 1)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-M-o") 'helm-projectile)
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
+(global-set-key (kbd "C-M-`") 'helm-all-mark-rings)
+(global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "M-i") 'helm-semantic-or-imenu)
+
 (ac-config-default)
-(icy-mode 1)
+;; (icy-mode 1)
 (setq-default indent-tabs-mode nil)
 
 ;;; save place
@@ -73,14 +143,6 @@ Return a list of installed packages or nil for every skipped package."
 	  )
 	exec-path))
 
-;;; easy keys to split window.  Key based on ErgoEmacs keybinding
-(global-set-key (kbd "C-M-1") 'delete-other-windows) ; expand current pane
-(global-set-key (kbd "C-M-2") 'split-window-vertically) ; split pane top/bottom
-(global-set-key (kbd "C-M-3") 'split-window-horizontally) ; split pane left/right
-(global-set-key (kbd "C-M-4") 'delete-window) ; close current pane
-(global-set-key (kbd "M-8") 'other-window) ; cursor to other pane
-
-(global-set-key (kbd "M-9") 'ace-window)
 
 ;;; tabbar
 (tabbar-mode t)
@@ -327,19 +389,6 @@ Return a list of installed packages or nil for every skipped package."
 ;;; goto-last-change
 (global-set-key (kbd "C-`") 'goto-last-change)
 
-;;; helm
-(setq helm-command-prefix-key "C-c h")
-(require 'helm-config)
-(helm-mode 1)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x b") 'helm-mini)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-M-o") 'helm-projectile)
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
-(global-set-key (kbd "C-M-`") 'helm-all-mark-rings)
-(global-set-key (kbd "C-c h o") 'helm-occur)
-(global-set-key (kbd "M-i") 'helm-semantic-or-imenu)
 
 ;;; gtags
 (custom-set-variables
