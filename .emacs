@@ -45,7 +45,8 @@ Return a list of installed packages or nil for every skipped package."
    auto-complete 
    bookmark+ 
    coffee-mode
-   color-theme 
+   color-theme
+   monokai-theme
    es-windows 
    icicles magit 
    git-rebase-mode 
@@ -127,6 +128,8 @@ Return a list of installed packages or nil for every skipped package."
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebihnd tab to do persistent action
 (global-set-key (kbd "C-M-`") 'helm-all-mark-rings)
 (global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "M-p o") 'helm-occur)
+(global-set-key (kbd "M-p a") 'helm-projectile-ack)
 (global-set-key (kbd "M-i") 'helm-semantic-or-imenu)
 
 (ac-config-default)
