@@ -92,6 +92,7 @@ Return a list of installed packages or nil for every skipped package."
    jedi
    jedi-direx
    py-autopep8
+   less-css-mode
    ))
 
 ;; make sure to have downloaded archive description.

@@ -3,4 +3,4 @@
 # key: div
 # binding: direct-keybinding
 # --
-<div>$0</div>
+<div$1>$0</div>
